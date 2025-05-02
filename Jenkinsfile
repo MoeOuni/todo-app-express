@@ -23,13 +23,21 @@ pipeline {
         }
         stage('Build and Deploy') {
             steps {
-                // You can either deploy directly here, or use Docker commands if you are containerizing your app
-                // For example, if using Docker:
-                sh 'docker build -t todo-app .'
-                sh 'docker run -d -p 3000:3000 todo-app'
-                // Alternatively, if not using Docker, you could use process managers like PM2:
-                // sh 'pm2 restart all || pm2 start index.js'
-                // sh 'npm start' // Simple example for starting the app manually.
+                script {
+                    // Stop and remove the running container if it exists
+                    sh '''
+                    if [ "$(docker ps -q -f name=todo-app)" ]; then
+                        echo "Stopping and removing existing container..."
+                        docker stop todo-app
+                        docker rm todo-app
+                    fi
+                    '''
+                    // Build the Docker image
+                    sh 'docker build -t todo-app .'
+
+                    // Run the new container with a given name so it can be easily referenced later
+                    sh 'docker run -d --name todo-app -p 3000:3000 todo-app'
+                }
             }
         }
     }

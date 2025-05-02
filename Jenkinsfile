@@ -21,11 +21,11 @@ pipeline {
             steps {
                 // You can either deploy directly here, or use Docker commands if you are containerizing your app
                 // For example, if using Docker:
-                // sh 'docker build -t todo-app .'
-                // sh 'docker run -d -p 3000:3000 todo-app'
+                sh 'docker build -t todo-app .'
+                sh 'docker run -d -p 3000:3000 todo-app'
                 // Alternatively, if not using Docker, you could use process managers like PM2:
                 // sh 'pm2 restart all || pm2 start index.js'
-                sh 'npm start' // Simple example for starting the app manually.
+                // sh 'npm start' // Simple example for starting the app manually.
             }
         }
     }

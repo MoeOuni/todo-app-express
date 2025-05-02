@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express Todo App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #todo-form {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        #todo-input {
+            flex-grow: 1;
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Todo App</h1>
+    <form id="todo-form">
+        <input type="text" id="todo-input" placeholder="Add a new task..." required>
+        <button type="submit">Add</button>
+    </form>
+
+    <ul id="todo-list"></ul>
+
+    <script>
+        // Function to fetch all todos from the API
+        async function fetchTodos() {
+            try {
+                const response = await fetch('/api/todos');
+                const todos = await response.json();
+                displayTodos(todos);
+            } catch (error) {
+                console.error('Error fetching todos:', error);
+            }
+        }
+
+        // Function to display todos in the UI
+        function displayTodos(todos) {
+            const todoList = document.getElementById('todo-list');
+            todoList.innerHTML = '';
+
+            todos.forEach(todo => {
+                const li = document.createElement('li');
+
+                // Todo text with completed status
+                const todoText = document.createElement('span');
+                todoText.textContent = todo.title;
+                if (todo.completed) {
+                    todoText.classList.add('completed');
+                }
+
+                // Toggle completion
+                todoText.addEventListener('click', () => toggleTodo(todo.id, !todo.completed));
+
+                // Action buttons
+                const actions = document.createElement('div');
+                actions.className = 'actions';
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.addEventListener('click', () => deleteTodo(todo.id));
+
+                actions.appendChild(deleteBtn);
+
+                li.appendChild(todoText);
+                li.appendChild(actions);
+                todoList.appendChild(li);
+            });
+        }
+
+        // Function to add a new todo
+        async function addTodo(title) {
+            try {
+                const response = await fetch('/api/todos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ title, completed: false }),
+                });
+
+                if (response.ok) {
+                    fetchTodos(); // Refresh the list
+                }
+            } catch (error) {
+                console.error('Error adding todo:', error);
+            }
+        }
+
+        // Function to toggle todo completion status
+        async function toggleTodo(id, completed) {
+            try {
+                const response = await fetch(`/api/todos/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ completed }),
+                });
+
+                if (response.ok) {
+                    fetchTodos(); // Refresh the list
+                }
+            } catch (error) {
+                console.error('Error updating todo:', error);
+            }
+        }
+
+        // Function to delete a todo
+        async function deleteTodo(id) {
+            try {
+                const response = await fetch(`/api/todos/${id}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    fetchTodos(); // Refresh the list
+                }
+            } catch (error) {
+                console.error('Error deleting todo:', error);
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('todo-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const input = document.getElementById('todo-input');
+            const title = input.value.trim();
+
+            if (title) {
+                addTodo(title);
+                input.value = '';
+            }
+        });
+
+        // Load todos when page loads
+        document.addEventListener('DOMContentLoaded', fetchTodos);
+    </script>
+</body>
+
+</html>

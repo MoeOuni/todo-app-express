@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  todo-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: todo-app
+    container_name: todo-app
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      - PORT=3000
+    volumes:
+      - ./:/app
+      - /app/node_modules

@@ -24,19 +24,11 @@ pipeline {
         stage('Build and Deploy') {
             steps {
                 script {
-                    // Stop and remove the running container if it exists
+                    // Stop any running containers and build/start with docker-compose
                     sh '''
-                    if [ "$(docker ps -q -f name=todo-app)" ]; then
-                        echo "Stopping and removing existing container..."
-                        docker stop todo-app
-                        docker rm todo-app
-                    fi
+                    docker-compose down || true
+                    docker-compose up --build -d
                     '''
-                    // Build the Docker image
-                    sh 'docker build -t todo-app .'
-
-                    // Run the new container with a given name so it can be easily referenced later
-                    sh 'docker run -d --name todo-app -p 3000:3000 todo-app'
                 }
             }
         }

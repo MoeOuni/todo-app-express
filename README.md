@@ -8,6 +8,23 @@ A simple Express.js Todo application with a REST API and web interface.
 - Simple web interface
 - RESTful API
 - Docker support
+- Docker Compose support
+
+## Running with Docker Compose
+
+The easiest way to run the application is with Docker Compose:
+
+```bash
+docker-compose up -d
+```
+
+This will build the image if needed and start the container in detached mode.
+
+To stop the application:
+
+```bash
+docker-compose down
+```
 
 ## Running with Docker
 

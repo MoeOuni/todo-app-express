@@ -1,7 +1,10 @@
 // Simple in-memory todo store
 let todos = [
     { id: 1, title: 'Learn Express.js', completed: false },
-    { id: 2, title: 'Build a REST API', completed: false }
+    { id: 2, title: 'Build a REST API', completed: false },
+    { id: 3, title: 'Deploy to Heroku', completed: false },
+    { id: 4, title: 'Write tests', completed: false },
+    { id: 5, title: 'Document the API', completed: false }
 ];
 
 // Generate a new ID for a todo
